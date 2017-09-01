@@ -1,0 +1,19 @@
+{
+  "name": "nyt-react",
+  "version": "1.0.0",
+  "description": "React based web application where user retrives NYTimes articles and saves for later reading.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdnurul62/NYT-React.git"
+  },
+  "author": "nurul",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdnurul62/NYT-React/issues"
+  },
+  "homepage": "https://github.com/mdnurul62/NYT-React#readme"
+}
