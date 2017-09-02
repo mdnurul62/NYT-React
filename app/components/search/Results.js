@@ -1,12 +1,12 @@
 // Include React as a dependency
 var React = require("react");
+var helpers = require("../utils/helpers");
 
 // Results Component Declaration
 var Results = React.createClass({
-     
 // Here we will save states for the contents we save 
   getInitialState: function(){
-    return { item: ""}
+    return { title: "", url: "", pubDate: ""}
   },
  
   handleChange: function(event) {
@@ -22,11 +22,36 @@ var Results = React.createClass({
     event.preventDefault();
     console.log("handle submit clicked!");
     //set the Search to have the search terms
-    this.props.setArticles(this.state.articles);
+
+    helpers.postHistory(search.headline.main, search.pub_date, search.web_url).then(function(data) {
+        console.log(search.headline.main);
+    }.bind(this))
+    //this.props.setArticles(this.state.articles);
   },
 
   // A helper method for rendering a container and all of our artiles inside
   render: function() {
+    if (!this.props.articles.hasOwnProperty("docs")) {
+      <li>
+        <h3><span><em>Enter search terms ---</em></span></h3>
+      </li>
+    } else {
+
+      //loop through articles
+      var article = this.props.articles.docs.map(function(search, index) {
+        return (
+          <div key={index} >
+            <li className="list-group-item">
+              <h3>
+                <span><em>{search.headline.main}</em></span><span className="btn-group pull-right"><a href={search.web_url} rel="noopener noreferrer" target="_blank"><button className="btn btn-primary">View Article</button></a><button className="btn btn-action" type="submit" onClick={this.handleClick}> Save</button></span>
+              </h3>
+              <p>Published date: {search.pub_date}</p>
+            </li>
+          </div>
+          )
+      }.bind(this))
+    }
+
 
     return (
             <div className="panel panel-primary">
@@ -35,16 +60,7 @@ var Results = React.createClass({
               </div>
               <div className="panel-body">
                 <ul className="list-group">
-                  {this.props.articles.map(function(search, index) {
-                     return (
-                        <div key={index} >
-                            <li className="list-group-item">
-                              <h3><span><em>{search.title}</em></span><span className="btn-group pull-right"><a href={search.url} rel="noopener noreferrer" target="_blank"><button className="btn btn-primary">View Article</button></a><button className="btn btn-action" type="submit" onClick={this.handleClick}> Save</button></span></h3>
-                              <p>Published date: {search.date}</p>
-                            </li>
-                          </div>
-                      );
-                  })}
+                  {article}
                 </ul>
               </div>
             </div>

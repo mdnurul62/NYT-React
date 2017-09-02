@@ -18,7 +18,7 @@ var Main = React.createClass({
       searchTerm: "",
       searchStartYear: 0,
       searchEndYear: 0, 
-      results: [], 
+      results: "", 
       history: [] 
     };
   },
@@ -26,11 +26,11 @@ var Main = React.createClass({
   // The moment the page renders get the History
   componentDidMount: function() {
     // Get the latest history.
-    helpers.getHistory().then(function(response) {
-      console.log(response);
-      if (response !== this.state.history) {
-        console.log("History", response.data);
-        this.setState({ history: response.data });
+    helpers.getHistory().then(function(results) {
+      console.log(results);
+      if (results !== this.state.history) {
+        console.log("History", results);
+        this.setState({ history: [results] });
       }
     }.bind(this));
   },
@@ -41,48 +41,24 @@ var Main = React.createClass({
     if (this.state.searchTerm !== "" && (prevState.searchTerm !== this.state.searchTerm || prevState.searchStartYear !== this.state.searchStartYear || prevState.searchEndYear !== this.state.searchEndYear)) {
       console.log("Updated!")
     // Run the query for the address
-    helpers.runQuery(this.state.searchTerm, this.state.searchStartYear, this.state.searchEndYear).then(function(response) {
-      if (response !== this.state.results) {
-        console.log("Articles", response);
-        this.setState({results: response });
-
-        // After we've received the result... then post the search term to our history.
-        helpers.postHistory().then(function(response) {
-          console.log("Updated!", response);
-
-          // After we've done the post... then get the updated history
-          helpers.getHistory().then(function(response) {
-            console.log("Current History", response.data.response);
-
-            this.setState({ history: response.data });
-
-          }.bind(this));
-        }.bind(this));
-      }
+    helpers.runQuery(this.state.searchTerm, this.state.searchStartYear, this.state.searchEndYear).then(function(data) {
+      if (data !== this.state.results) {
+        console.log("Articles", data.response);
+        this.setState({results: data.response });
+     }
     }.bind(this));
   }
 },
   // This function allows childrens to update the parent.
-  setTerm: function(term, startYear, endYear) {
+  setTerm: function(newTerm, newStartYear, newEndYear) {
     this.setState({ 
-      searchTerm: term,
-      searchStartYear: startYear,
-      searchEndYear: endYear
+      searchTerm: newTerm,
+      searchStartYear: newStartYear,
+      searchEndYear: newEndYear
        });
   },
 
-  
-    // /*This code handles the sending of the search terms to the parent component*/
-    handleClick: function(item, event){
-      event.preventDefault();
-    console.log("CLICKED");
-    helpers.postHistory(item.headline.main, item.pub_date, item.web_url)
-      .then(function(data){
-        console.log(item.web_url);
-      }.bind(this))
-
-  },
-
+ 
  //Here we render parent and children to page 
   render: function() {
 

@@ -5,7 +5,8 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 
 // Require History Schema
-var Article = require("./models/Article");
+var Article = require("./models/Article.js");
+mongoose.Promise = Promise;
 
 // Create Instance of Express
 var app = express();
@@ -23,16 +24,22 @@ app.use(express.static("public"));
 
 // -------------------------------------------------
 
+
 // MongoDB Configuration configuration (Change this URL to your own DB)
-mongoose.connect("mongodb://localhost/nytreact");
+var promise = mongoose.connect("mongodb://localhost/nytreact", {
+  useMongoClient: true
+});
+promise.then(function(db) {
+
 var db = mongoose.connection;
 
 db.on("error", function(err) {
   console.log("Mongoose Error: ", err);
 });
 
-db.once("open", function() {
+db.once("openUri", function() {
   console.log("Mongoose connection successful.");
+});
 });
 
 // -------------------------------------------------
@@ -47,16 +54,15 @@ app.get("/", function(req, res) {
 app.get("/api/saved", function(req, res) {
 
   // We will find all the records, sort it in descending order, then limit the records to 5
-  Article.find({}).sort([
-    ["date", "descending"]
-  ]).limit(5).exec(function(err, doc) {
-    if (err) {
-      console.log(err);
+  Article.find({})
+    .exec(function(err, doc) {
+      if (err) {
+        console.log(err);
+      }
+      else {
+        res.send(doc);
     }
-    else {
-      res.send(doc);
-    }
-  });
+  })
 });
 
 // This is the route we will send POST requests to save each search.
@@ -65,12 +71,16 @@ app.post("/api/saved", function(req, res) {
   console.log(req.body);
   // Here we'll save the location based on the JSON input.
   // We'll use Date.now() to always get the current date time
-  newArticle.save(function(err, doc){
+  
+  var title = req.body.title;
+  var date = req.body.date;
+  var url = req.body.url;
+  newArticle.save(function(err, doc) {
     if (err) {
       console.log(err);
     }
     else {
-      res.send(doc);
+      res.json(doc);
     }
   });
 });
@@ -80,8 +90,8 @@ app.delete("/api/saved/:id", function(req, res) {
 
   var url = req.param("url");
 
-  Article.find({ url: url }).remove().exec(function(err) {
-    if (err) {
+  Article.find({ "url": url }).remove().exec(function(err, data) {
+      if (err) {
       console.log(err);
     }
     else {

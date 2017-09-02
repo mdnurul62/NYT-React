@@ -4,7 +4,6 @@ var helpers = require("../utils/helpers");
 
 // This is the Form, our main component. It includes the banner and form element
 var Search = React.createClass({
-
   // Here we set a generic state associated with the text being searched for
   getInitialState: function() {
     return { term: "", startYear: 0, endYear: 0 };
@@ -39,15 +38,7 @@ var Search = React.createClass({
     console.log("Found: ", this.state.term, this.state.startYear, this.state.endYear);
     //set the Search to have the search terms
     this.props.setTerm(this.state.term, this.state.startYear, this.state.endYear);
-    //this.props.setStartYear(this.state.startYear);
-    //this.props.setEndYear(this.state.endYear);
-    //clearing the input field after submitting
-    // this.setState({
-    //   term: "",
-    //   startYear: 0,
-    //   endYear: 0
-    // });
-
+    
   },
 
   // Here we descibe this component's render method

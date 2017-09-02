@@ -6,7 +6,7 @@ var axios = require("axios");
 var APIkey= "b9f91d369ff59547cd47b931d8cbc56b:0:74623931";
 
 // Helper functions for making API Calls
-var helpers = {
+var helper = {
 
   // This function serves our purpose of running the query to geolocate.
   runQuery: function(term, startYear, endYear) {
@@ -29,61 +29,57 @@ var helpers = {
        "begin_date": formattedStartYear,
          "end_date": formattedEndYear
     }
-   }).then(function(response) {
+   }).then(function(results) {
 
-      var resultsArr = [];
-      for (var i = 0; i < 5; i++) {
-        var dataObj = {
-          title: response.data.response.docs[i].headline.main,
-          date: response.data.response.docs[i].pub_date,
-          url: response.data.response.docs[i].web_url
-        }
-        resultsArr.push(dataObj);
-      }
-      return resultsArr;
-      console.log(resultsArr);
+      console.log("Axios results ", results.data.response);
+      return results.data;
+
+      // var resultsArr = [];
+      // for (var i = 0; i < 10; i++) {
+      //   var dataObj = {
+      //     title: response.data.response.docs[i].headline.main,
+      //     date: response.data.response.docs[i].pub_date,
+      //     url: response.data.response.docs[i].web_url
+      //   }
+      //   resultsArr.push(dataObj);
+      // }
+      // return resultsArr;
+      // console.log(resultsArr);
   });
 },
-  // This function hits our own server to retrieve the record of query results
-  getHistory: function(title, date, url) {
-    return axios.get("/api/saved", {
-      title: title,
-      "url": url,
-      "date": date
-    }).then(function(response) {
-     console.log("Saved results: ", response.data);
-      return response;
+  
+
+  getHistory: function() {
+    return axios.get("/api/saved").then(function(results) {
+        console.log("Axios history results ", results);
+        return results;
     });
   },
 
-  // This function posts new searches to our database.
-  postHistory: function(title, date, url) {
-    var newArticle = {
-      title: title,
-      date: Date,
-      url: url
-    };
-    return axios.post("/api/saved", newArticle)
-    .then(function(response) {
-      console.log("Results data id: ", response.data._id);
-      return response.data._id;
+ 
 
-    });
+  postHistory: function(title, date, url) {
+    var newArticle = {title: title, date: date, url: url};
+    return axios.post("/api/saved", newArticle)
+      .then(function(results) {
+        console.log("Axios post results ", results._id);
+        return results._id;
+      })
   },
 
   deleteHistory: function(title, data, url) {
     return axios.delete("/api/saved", {
       params: {
-        title: title,
-        date: Date,
-        url: url
+        "title": title,
+        "date": Date,
+        "url": url
       }
-    }). then(function(response) {
-      console.log("Delete data id: ", response.data.title);
-      return response.data.title;
+    }). then(function(results) {
+      console.log("Delete data id: ", results);
+      return results;
     })
   }
-};
+}
 
 // We export the API helper
-module.exports = helpers;
+module.exports = helper;

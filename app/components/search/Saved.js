@@ -6,21 +6,20 @@ var React = require("react");
 
 // Create the Saved component
 var Saved = React.createClass({
-
   getInitialState: function(){
     return {
-      history: ""
+      history: []
     }
   },
 
  componentDidMount: function(){
 
     helpers.getHistory()
-      .then(function(historyData){
+      .then(function(results){
         this.setState({
-          history: historyData.data
+          history: [results]
         });
-        console.log("saved results", historyData.data);
+        console.log("saved results", results);
       }.bind(this))
   },
  
@@ -31,29 +30,52 @@ var Saved = React.createClass({
     helpers.deleteHistory(item.title, item.date, item.url).then(function(data) {
       //get revised list
       helpers.getHistory().then(function(historyData) {
+        console.log(historyData);
         this.setState({history: historyData.data});
+        console.log("Saved results", historyData.data)
       }.bind(this))
     }.bind(this))
   },
 
   render: function() {
+    if (this.state.history == "") {
+      return(
+        <div className= "row">
+          <div className="col-lg-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading">
+                <h2> Save your first article</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        )
+    } else {
+
+      var newHistory = this.state.history.map(function(article, index) {
+          <div key={index}>
+            <li className="list-group-item">
+              <h3><span><em>{article.title}</em></span><span className="btn-group pull-right"><button className="btn btn-primary" onClick={this.handleClick.bind(this, article)}> Delete</button></span>
+              </h3>
+              <p> Published date: {article.date} </p>
+            </li>
+          </div>
+      }.bind(this))
+    }
+    
     return (
+
         <div className="row">
           <div className="col-lg-12">
             <div className="panel panel-primary">
               <div className="panel-heading">
-              <h1 className="panel-title"><strong><i className="fa fa-download" aria-hidden="true"></i> Saved Articles</strong></h1>
+              <h1 className="panel-title"><strong><i className="fa fa-download" aria-hidden="true"></i> Saved Articles</strong>
+              </h1>
               </div>
               <div className="panel-body">
-                <h4> Articles: </h4>
-                {this.props.history.map((search, i) =>{
-                  return (
-                    <p key={i} onClick={this.handleClick}>
-                      {search.title} - {search.date}
-                      <button type="submit">Delete</button>
-                    </p>
-                    )
-                })}
+                <ul className="list-group">
+                  {newHistory}
+                </ul>
               </div>
             </div>
           </div>
@@ -63,56 +85,6 @@ var Saved = React.createClass({
 
 });
 
-  
-//   // A helper method for rendering the HTML when we have no saved articles
-//   renderEmpty: function() {
-//     return (
-//       <li className="list-group-item">
-//         <h3><span><em>Save your first article...</em></span></h3>
-//       </li>
-//     );
-//   },
-
-//   // A helper method for mapping through our articles and outputting some HTML
-//   renderArticles: function() {
-//     return this.props.articles.map(function(article, index) {
-
-//       return (
-//         <div key={index}>
-//           <li className="list-group-item">
-//             <h3><span><em>{article.title}</em></span><span className="btn-group pull-right"><a href={article.url} rel="noopener noreferrer" target="_blank"><button className="btn btn-default ">View Article</button></a><button className="btn btn-primary" onClick={() => this.handleClick(article)}>Delete</button></span></h3>
-//             <p>Published date: {article.date}</p>
-//           </li>
-//         </div>
-//       );
-//     }.bind(this));
-//   },
-
-//   // A helper method for rendering a container and all of our artiles inside
-//   renderContainer: function() {
-//     return (
-//             <div className="panel panel-primary">
-//               <div className="panel-heading">
-//                 <h1 className="panel-title"><strong><i className="fa fa-download" aria-hidden="true"></i> Saved Articles</strong></h1>
-//               </div>
-//               <div className="panel-body">
-//                 <ul className="list-group">
-//                   {this.props.renderArticles}
-//                 </ul>
-//               </div>
-//             </div>
-//     );
-//   },
-//   // Our render method. Utilizing a few helper methods to keep this logic clean
-//   render: function() {
-//     // If we have no articles, we will return this.renderEmpty() which in turn returns some HTML
-//     if (!this.props.articles) {
-//       return this.renderEmpty();
-//     }
-//     // If we have articles, return this.renderContainer() which in turn returns all saves articles
-//     return this.renderContainer();
-//   }
-// });
 
 // Export the component back for use in other files
 module.exports = Saved;
