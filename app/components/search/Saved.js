@@ -17,7 +17,7 @@ var Saved = React.createClass({
     helpers.getHistory()
       .then(function(results){
         this.setState({
-          history: [results]
+          history: [results.data.response, results.pub_date]
         });
         console.log("saved results", results);
       }.bind(this))
@@ -52,12 +52,11 @@ var Saved = React.createClass({
         )
     } else {
 
-      var newHistory = this.state.history.map(function(article, index) {
-          <div key={index}>
+      var newHistory = this.props.history.map(function(search, i) {
+          <div key={i}>
             <li className="list-group-item">
-              <h3><span><em>{article.title}</em></span><span className="btn-group pull-right"><button className="btn btn-primary" onClick={this.handleClick.bind(this, article)}> Delete</button></span>
+              <h3><span><em>{search.title}</em></span><span className="btn-group pull-right"><button className="btn btn-primary" onClick={this.handleClick.bind(this, search)}> Delete</button></span>
               </h3>
-              <p> Published date: {article.date} </p>
             </li>
           </div>
       }.bind(this))

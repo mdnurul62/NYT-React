@@ -49,21 +49,21 @@ var helper = {
 },
   
 
-  getHistory: function() {
+  getHistory: function(results) {
     return axios.get("/api/saved").then(function(results) {
         console.log("Axios history results ", results);
         return results;
     });
   },
 
- 
+
 
   postHistory: function(title, date, url) {
     var newArticle = {title: title, date: date, url: url};
     return axios.post("/api/saved", newArticle)
       .then(function(results) {
-        console.log("Axios post results ", results._id);
-        return results._id;
+        console.log("Axios post results ", results);
+        return results;
       })
   },
 

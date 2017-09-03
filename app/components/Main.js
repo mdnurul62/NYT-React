@@ -26,11 +26,11 @@ var Main = React.createClass({
   // The moment the page renders get the History
   componentDidMount: function() {
     // Get the latest history.
-    helpers.getHistory().then(function(results) {
-      console.log(results);
-      if (results !== this.state.history) {
-        console.log("History", results);
-        this.setState({ history: [results] });
+    helpers.getHistory().then(function(response) {
+      console.log(response);
+      if (response !== this.state.history) {
+        console.log("History", response.data);
+        this.setState({ history: response.data });
       }
     }.bind(this));
   },

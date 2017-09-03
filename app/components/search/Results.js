@@ -23,8 +23,8 @@ var Results = React.createClass({
     console.log("handle submit clicked!");
     //set the Search to have the search terms
 
-    helpers.postHistory(search.headline.main, search.pub_date, search.web_url).then(function(data) {
-        console.log(search.headline.main);
+    helpers.postHistory(search.headline, search.pub_date, search.web_url).then(function(data) {
+        console.log(search.headline);
     }.bind(this))
     //this.props.setArticles(this.state.articles);
   },

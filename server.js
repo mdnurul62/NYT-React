@@ -26,21 +26,17 @@ app.use(express.static("public"));
 
 
 // MongoDB Configuration configuration (Change this URL to your own DB)
-var promise = mongoose.connect("mongodb://localhost/nytreact", {
-  useMongoClient: true
-});
-promise.then(function(db) {
-
+mongoose.connect("mongodb://localhost/nytreact");
 var db = mongoose.connection;
 
 db.on("error", function(err) {
   console.log("Mongoose Error: ", err);
 });
 
-db.once("openUri", function() {
+db.once("open", function() {
   console.log("Mongoose connection successful.");
 });
-});
+
 
 // -------------------------------------------------
 
