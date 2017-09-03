@@ -23,10 +23,8 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 app.use(express.static("public"));
 
 // -------------------------------------------------
-
-
 // MongoDB Configuration configuration (Change this URL to your own DB)
-mongoose.connect("mongodb://localhost/nytreact");
+mongoose.connect("mongodb://heroku_550dx727:jqwhuBfrxzrtn9bjkEkF5RswteevBFIs@ds115214.mlab.com:15214/heroku_550dx727");
 var db = mongoose.connection;
 
 db.on("error", function(err) {
