@@ -1,11 +1,11 @@
-//Main react dependencies
+// Include the Main React Dependencies
 var React = require("react");
-var ReactDom = require("react-dom");
+var ReactDOM = require("react-dom");
 
-//Include componsent
-var Main = require("./components/Main");
+// Grabs the Routes
+var routes = require("./config/routes");
 
-//React dom will render HTML on page
-ReactDom.render(<Main />, document.getElementById("app"));
-
-//Article Search API: a467541ace4b4a76abae45497ce4f5ae
+// Renders the contents according to the route page
+// Displays the contents in the div app of index.html
+// Note how ReactDOM takes in two parameters (the contents and the location)
+ReactDOM.render(routes, document.getElementById("app"));

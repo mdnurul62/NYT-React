@@ -1,113 +1,69 @@
-// Include React
+// Include React as a dependency
 var React = require("react");
-
-// Here we include all of the sub-components
-var Search = require("./search/Search");
-var Saved = require("./search/Saved");
-var Results = require("./search/Results");
-
-// Helper for making AJAX requests to our API
-var helpers = require("./utils/helpers");
+// Including the Link component from React Router to navigate within our application without full page reloads
+// https://github.com/ReactTraining/react-router/blob/master/docs/API.md#link
+var Link = require("react-router").Link;
+//var Search = require("./Search");
+//var Saved = require("./Saved");
 
 // Create the Main component
 var Main = React.createClass({
-  // Here we set a generic state associated with the number of clicks
-  // Note how we added in this history state variable
-  getInitialState: function() {
-    return { 
-      searchTerm: "",
-      searchStartYear: 0,
-      searchEndYear: 0, 
-      results: "", 
-      history: [] 
-    };
-  },
 
-  // The moment the page renders get the History
-  componentDidMount: function() {
-    // Get the latest history.
-    helpers.getHistory().then(function(response) {
-      console.log(response);
-      if (response !== this.state.history) {
-        console.log("History", response.data);
-        this.setState({ history: response.data });
-      }
-    }.bind(this));
-  },
-
-  // If the component changes (i.e. if a search is entered)...
-  componentDidUpdate: function(prevProps, prevState) {
-    //If we have a new search term, run a new search
-    if (this.state.searchTerm !== "" && (prevState.searchTerm !== this.state.searchTerm || prevState.searchStartYear !== this.state.searchStartYear || prevState.searchEndYear !== this.state.searchEndYear)) {
-      console.log("Updated!")
-    // Run the query for the address
-    helpers.runQuery(this.state.searchTerm, this.state.searchStartYear, this.state.searchEndYear).then(function(data) {
-      if (data !== this.state.results) {
-        console.log("Articles", data.response);
-        this.setState({results: data.response });
-     }
-    }.bind(this));
-  }
-},
-  // This function allows childrens to update the parent.
-  setTerm: function(newTerm, newStartYear, newEndYear) {
-    this.setState({ 
-      searchTerm: newTerm,
-      searchStartYear: newStartYear,
-      searchEndYear: newEndYear
-       });
-  },
-
- 
- //Here we render parent and children to page 
   render: function() {
 
     return (
       // We can only render a single div. So we need to group everything inside of this main-container one
-      <div className="container">
-        <div className="row">
+      <div className="main-container">
+        <div className="container">
+          {/* Navbar */}
           <nav className="navbar navbar-default" role="navigation">
+            <div className="container-fluid">
               <div className="navbar-header">
-                <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <button
+                  type="button"
+                  className="navbar-toggle"
+                  data-toggle="collapse"
+                  data-target=".navbar-ex1-collapse"
+                >
                   <span className="sr-only">Toggle navigation</span>
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                 </button>
+                <Link className="navbar-brand" to="/">NYT-React</Link>
               </div>
+
               <div className="collapse navbar-collapse navbar-ex1-collapse">
                 <ul className="nav navbar-nav navbar-right">
-                    <li><a href="/search">Search</a></li>
-                    <li><a href="/saved">Saved Articles</a></li>
-                 </ul>
+                  {/* Using <Link> in place of <a> and "to" in place of "href" */}
+                  <li><Link to="/search">Search</Link></li>
+                  <li><Link to="/saved">Saved Articles</Link></li>
+                </ul>
               </div>
-          </nav> 
+            </div>
+          </nav>
 
           {/* Jumbotron */}
           <div className="jumbotron">
-            <h1 className="lead text-center"><strong>NY Times Article Search</strong></h1>
-            <h3 className="lead text-center">Find and save articles of interest.</h3>
+            <h2 className="text-center"><strong>New York Times Article Search</strong></h2>
+            <h3 className="text-center">Search for and save articles of interest.</h3>
+            <p className="text-center"> This is a React based app</p>
           </div>
-           {/* Here we will deploy the sub components (Search or Saved */}
+
+
+          {/* Here we will deploy the sub components (Search or Saved */}
           {/* These sub-components are getting passed as this.props.children */}
-            <div className="col-md-12">
-                <Search  setTerm={this.setTerm} />
-            </div>
-            <div className="col-md-12">
-                <Results articles={this.state.results} />
-            </div>
-            <div className="col-md-12">
-                <Saved history={this.state.history} />
-            </div>
-            <footer>
-                <hr />
-                <p className="text-center">md@nurul</p>
-            </footer>
+          {this.props.children}
+
+          <footer>
+            <hr />
+            <p className="text-center">md@nurul</p>
+          </footer>
         </div>
       </div>
     );
   }
 });
 
-// Export the component back for use in other files
+// Export the module back to the route
 module.exports = Main;

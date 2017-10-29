@@ -1,72 +1,109 @@
 // Include React as a dependency
 var React = require("react");
-var helpers = require("../utils/helpers");
+
+// Include our helpers for API calls
+var helpers = require("../../utils/helpers");
 
 // Results Component Declaration
 var Results = React.createClass({
-// Here we will save states for the contents we save 
-  getInitialState: function(){
-    return { title: "", url: "", pubDate: ""}
-  },
- 
-  handleChange: function(event) {
-    // Here we create syntax to capture any change in text to the query terms (pre-search).
-    // See this Stack Overflow answer for more details:
-    // http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
-    var newState = {};
-    newState[event.target.id] = event.target.value;
-    this.setState(newState);
-  },
-  //When user submits
-  handleClick: function(search, event) {
-    event.preventDefault();
-    console.log("handle submit clicked!");
-    //set the Search to have the search terms
 
-    helpers.postHistory(search.headline, search.pub_date, search.web_url).then(function(data) {
-        console.log(search.headline);
-    }.bind(this))
-    //this.props.setArticles(this.state.articles);
+  // Here we will save states for the contents we save
+  getInitialState: function() {
+    return {
+      title: "",
+      url: "",
+      pubdate: ""
+    };
   },
 
-  // A helper method for rendering a container and all of our artiles inside
-  render: function() {
-    if (!this.props.articles.hasOwnProperty("docs")) {
-      <li>
-        <h3><span><em>Enter search terms ---</em></span></h3>
-      </li>
-    } else {
+  // This code handles the sending of the search terms to the parent Search component
+  handleClick: function(item) {
+    console.log("CLICKED");
+    console.log(item);
 
-      //loop through articles
-      var article = this.props.articles.docs.map(function(search, index) {
-        return (
-          <div key={index} >
-            <li className="list-group-item">
-              <h3>
-                <span><em>{search.headline.main}</em></span><span className="btn-group pull-right"><a href={search.web_url} rel="noopener noreferrer" target="_blank"><button className="btn btn-primary">View Article</button></a><button className="btn btn-action" type="submit" onClick={this.handleClick}> Save</button></span>
-              </h3>
-              <p>Published date: {search.pub_date}</p>
-            </li>
-          </div>
-          )
-      }.bind(this))
-    }
+    helpers.postSaved(item.headline.main, item.pub_date, item.web_url).then(function() {
+      console.log(item.web_url);
+    });
+  },
 
+  // A helper method for mapping through our articles and outputting some HTML
+  renderArticles: function() {
+    return this.props.results.docs.map(function(article, index) {
 
+      // Each article thus reperesents a list group item with a known index
+      return (
+        <div key={index}>
+          <li className="list-group-item">
+            <h3>
+              <span>
+                <em>{article.headline.main}</em>
+              </span>
+              <span className="btn-group pull-right">
+                <a href={article.web_url} rel="noopener noreferrer" target="_blank">
+                  <button className="btn btn-default ">View Article</button>
+                </a>
+
+                {/*
+                  By using an arrow function callback to wrap this.handleClick,
+                  we can pass in an article as an argument
+                */}
+                <button className="btn btn-primary" onClick={() => this.handleClick(article)}>Save</button>
+              </span>
+            </h3>
+            <p>Date Published: {article.pub_date}</p>
+
+          </li>
+
+        </div>
+      );
+
+    }.bind(this));
+
+  },
+
+  // A helper method for rendering a container to hold all of our articles
+  renderContainer: function() {
     return (
+      <div className="main-container">
+        <div className="row">
+          <div className="col-lg-12">
             <div className="panel panel-primary">
               <div className="panel-heading">
-                <h1 className="panel-title"><strong><i className="fa fa-list-alt"></i>Results</strong></h1>
+                <h1 className="panel-title">
+                  <strong>
+                    <i className="fa fa-list-alt"></i>
+                    Results
+                  </strong>
+                </h1>
               </div>
               <div className="panel-body">
                 <ul className="list-group">
-                  {article}
+                  {this.renderArticles()}
                 </ul>
               </div>
             </div>
-        );
-      }
-    });
+          </div>
+        </div>
+      </div>
+    );
+  },
+  render: function() {
+    // If we have no articles, render this HTML
+    if (!this.props.results.docs) {
+      return (
+        <li className="list-group-item">
+          <h3>
+            <span>
+              <em>Enter search terms to begin...</em>
+            </span>
+          </h3>
+        </li>
+      );
+    }
+    // If we have articles, return this.renderContainer() which in turn, returns all the articles
+    return this.renderContainer();
+  }
+});
 
-// Export the component back for use in other files
+// Export the module back to the route
 module.exports = Results;
